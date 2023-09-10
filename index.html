@@ -1,0 +1,222 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Math Game</title>
+    <style>
+     * {
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
+  }
+        body {
+            font-family: Arial, sans-serif;
+            display: flex;
+            text-align: center;
+            align-items: center;
+            height: 100vh;
+            gap: 10px;
+        }
+        h1 {
+            color: #333;
+        }
+        button {
+            font-size: 16px;
+            padding: 10px 20px;
+            margin: 10px;
+            border-radius: 20px;
+        }
+        .container{
+            max-width: 1140px;
+            margin: 0 auto;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            gap:10px;
+            font-size: 3em;
+            background-color: beige;
+            padding: 50px;
+        }
+
+        input{
+            font-size: 1em;
+            text-align: center;
+        }
+        .resetScre:hover{
+            background-color: aquamarine;
+        }
+        .AnsCheck:hover{
+            background-color: brown;
+            color:white
+        }
+        .txtbox{
+            font-size: 1em;
+            padding: 10px;
+        }
+        .startBtn{
+            background-color:red;
+            color: white;
+            font-weight: bold;
+        }
+        .startBtn:hover{
+            background-color:aquamarine;
+        }
+        .but-con{
+            margin-top: 10px;
+            display: flex;
+            flex-flow: row wrap;
+            justify-content: space-between;
+        }
+        .next-bu:hover{
+            background-color: blueviolet;
+            color:white;
+        }
+        .message-p{
+            color: aliceblue;
+            font-size: 1em;
+            padding: 30px;
+        }
+        .message-con{
+            background-color: blueviolet;
+            width: 100%;
+        }
+
+        @media(max-width:480px){
+            
+            body {
+            font-family: Arial, sans-serif;
+            display: flex;
+            text-align: center;
+            align-items: center;
+            height: 100vh;
+            gap: 10px;
+        }
+            .but-con{
+                display: flex;
+                flex-direction: column;
+                
+            }
+            .container{
+                font-size: 1em;
+                display: flex;
+                flex-direction: column;
+                justify-content: center;
+                align-items: center;
+            }
+    }
+    </style>
+</head>
+<body>
+    <div class="container">
+        
+    <h1>Math Game</h1>
+    <div id="problem"></div>
+    
+    <input type="text" id="answer" placeholder="Your Answer" class="txtbox">
+
+    <div class="but-con">
+    <button onclick=" startGame()" class="startBtn">Start</button>
+    <button onclick="checkAnswer()" class="AnsCheck">Submit</button>
+    <button onclick="resetScore()" class="resetScre">Reset Score</button>
+    <button onclick="nextq()" class = "next-bu"> ข้าม </button>
+</div>
+    <p>Time Left: <span id="timer">60</span> seconds</p>
+    <div class="message-con">
+    <p id="message" class="message-p"></p>
+</div>
+    <p>Score: <span id="score">0</span></p>
+</div>
+
+    <script>
+        let currentProblem = generateProblem();
+        let timeLeft = 60;
+        let score = 0;
+        let timerInterval;
+        
+        function nextq(){
+            let userAnswer = parseFloat(document.getElementById('answer').value);
+            currentProblem = generateProblem(); 
+            document.getElementById('problem').textContent = currentProblem.problem;
+            document.getElementById('answer').value = '';
+            document.getElementById('score').textContent = score;
+        
+        }
+         
+
+        function startGame(){
+            document.querySelector('.startBtn').disabled = true;
+            document.getElementById('problem').textContent = currentProblem.problem;
+            document.getElementById('score').textContent = score;
+            document.getElementById('timer').textContent = timeLeft;
+        
+        timerInterval = setInterval(function() {
+            timeLeft--;
+            document.getElementById('timer').textContent = timeLeft;
+
+            
+            if (timeLeft === 0) {
+                clearInterval(timerInterval); 
+                handleGameOver();
+            }
+        }, 1000);
+        }
+
+        
+
+        function generateProblem() {
+            let number1 = Math.floor(Math.random() * 10) + 1;
+            let number2 = Math.floor(Math.random() * 10) + 1;
+            let operator = ['+', '-', '*', '/'][Math.floor(Math.random() * 4)];
+
+            let result;
+            switch (operator) {
+                case '+':
+                    result = number1 + number2;
+                    break;
+                case '-':
+                    result = number1 - number2;
+                    break;
+                case '*':
+                    result = number1 * number2;
+                    break;
+                case '/':
+                    result = Math.round((number1 / number2) * 100) / 100; 
+                    break;
+            }
+
+            return { problem: `${number1} ${operator} ${number2}`, result: result };
+        }
+
+        function checkAnswer() {
+            let userAnswer = parseFloat(document.getElementById('answer').value);
+            let messageElement = document.getElementById('message');
+
+            if (userAnswer === currentProblem.result) {
+                messageElement.textContent = `Correct! ${currentProblem.problem} = ${currentProblem.result}`;
+                score++;
+            } else {
+                messageElement.textContent = `You fail! The correct answer was ${currentProblem.problem} = ${currentProblem.result}`;
+            }
+
+            currentProblem = generateProblem(); 
+            document.getElementById('problem').textContent = currentProblem.problem;
+            document.getElementById('answer').value = '';
+            document.getElementById('score').textContent = score;
+        }
+
+        function resetScore() {
+            score = 0;
+            document.getElementById('score').textContent = score;
+        }
+
+        function handleGameOver() {
+            let messageElement = document.getElementById('message');
+            messageElement.textContent = `Time's up! Your final score is ${score}`;
+            document.querySelector('.startBtn').disabled = false;
+        }
+
+    </script>
+</body>
+</html>
